@@ -323,7 +323,8 @@
     },
     "asyncPasteFailedOnRead": "Couldn't paste (couldn't read from system clipboard).",
     "asyncPasteFailedOnParse": "Couldn't paste.",
-    "copyToSystemClipboardFailed": "Couldn't copy to clipboard."
+    "copyToSystemClipboardFailed": "Couldn't copy to clipboard.",
+    "fileSystemPermissionDenied": "Your browser blocked access to your files. Check that file editing is allowed for this site (in Chrome: Settings → Privacy and security → Site settings → Additional permissions → File editing). If the setting is grayed out, your organization may have disabled it."
   },
   "toolBar": {
     "selection": "Selection",
