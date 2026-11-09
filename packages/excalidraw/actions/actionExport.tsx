@@ -14,7 +14,10 @@ import { Tooltip } from "../components/Tooltip";
 import { ExportIcon, questionCircle, saveAs } from "../components/icons";
 import { loadFromJSON, saveAsJSON } from "../data";
 import { isImageFileHandle } from "../data/blob";
-import { nativeFileSystemSupported } from "../data/filesystem";
+import {
+  isFileSystemPermissionError,
+  nativeFileSystemSupported,
+} from "../data/filesystem";
 
 import { resaveAsImageWithScene } from "../data/resave";
 
@@ -315,6 +318,9 @@ export const actionSaveToActiveFile = register({
         captureUpdate: CaptureUpdateAction.NEVER,
         appState: {
           toast: null,
+          ...(isFileSystemPermissionError(error) && {
+            errorMessage: t("errors.fileSystemPermissionDenied"),
+          }),
         },
       };
     } finally {
@@ -366,6 +372,9 @@ export const actionSaveFileToDisk = register({
         captureUpdate: CaptureUpdateAction.NEVER,
         appState: {
           toast: null,
+          ...(isFileSystemPermissionError(error) && {
+            errorMessage: t("errors.fileSystemPermissionDenied"),
+          }),
         },
       };
     } finally {
@@ -419,7 +428,12 @@ export const actionLoadScene = register({
       }
       return {
         elements,
-        appState: { ...appState, errorMessage: error.message },
+        appState: {
+          ...appState,
+          errorMessage: isFileSystemPermissionError(error)
+            ? t("errors.fileSystemPermissionDenied")
+            : error.message,
+        },
         files: app.files,
         captureUpdate: CaptureUpdateAction.EVENTUALLY,
       };

@@ -72,4 +72,12 @@ export const fileSave = (
   );
 };
 
+/**
+ * The browser refused file access for policy reasons (e.g. Chrome's "File
+ * editing" site permission is blocked, possibly by an administrator), as
+ * opposed to the user cancelling the picker (`AbortError`).
+ */
+export const isFileSystemPermissionError = (error: unknown): boolean =>
+  (error as Error | null)?.name === "NotAllowedError";
+
 export { nativeFileSystemSupported };
