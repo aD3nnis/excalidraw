@@ -107,6 +107,18 @@ flowchart TD
 
 **On my fork:** a push to a feature branch triggers none of these, because `test.yml` listens only to `master` pushes. CI runs when a PR is opened inside the fork (branch → fork `master`): `lint`, `coverage`, `semantic`, size-limit and cancel. Vercel is a GitHub App on upstream only and won't run. The PR title must pass the semantic check, for example `fix(editor): …`.
 
+**Bundle Size check disabled on my fork (2026-11-09).** On [PR #1](https://github.com/aD3nnis/excalidraw/pull/1), the first CI run (commit `a78fe99`) showed four checks green and _Bundle Size check @excalidraw/excalidraw_ red:
+
+![Fork Actions page: Bundle Size check failed on PR #1, the other four checks passed](assets/fork-ci-pr1-size-check-failed.webp)
+
+Why it failed, and why I disabled it rather than fixing it:
+
+- **It measures nothing.** `packages/excalidraw/.size-limit.json` checks `dist/excalidraw.production.min.js` and `dist/excalidraw-assets/…`, but the package build now writes to `dist/dev/` and `dist/prod/` (`scripts/buildPackage.js:116`, `:122`). Every entry in the run log measured 0 bytes ([run 42704158914](https://github.com/aD3nnis/excalidraw/actions/runs/42704158914)).
+- **It can't post on a fork.** The action failed to write its PR comment because the fork's workflow token is read-only ("Error creating comment … from a fork without write permissions").
+- **Upstream stopped relying on it.** Its last three upstream runs (2026-09-04) failed, and it has not run since. It is not one of upstream's required checks (`lint`, `semantic`, `coverage`, Vercel).
+
+Action: `gh workflow disable "Bundle Size check @excalidraw/excalidraw" -R aD3nnis/excalidraw` (fork only; upstream untouched). An empty commit (`dee48ca0c`) re-ran CI without it. Fixing the paths is an upstream task, out of scope for Project 1.
+
 ## 7. Local run results (2026-11-09, macOS, Node 22.22.3, yarn 1.22.22)
 
 CI uses Node 20.x (`.github/workflows/*.yml`); `package.json` `engines` allows `>=18`.
